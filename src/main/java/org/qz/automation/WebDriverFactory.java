@@ -17,7 +17,6 @@ public class WebDriverFactory {
     public static AndroidDriver driver;
 
     public static void initializeDriver()  {
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         UiAutomator2Options uiAutomator2Options = new UiAutomator2Options();
         uiAutomator2Options.setPlatformVersion("14.0");
         uiAutomator2Options.setPlatformName("Android");
@@ -27,9 +26,7 @@ public class WebDriverFactory {
         uiAutomator2Options.setCapability("appPackage","com.cogmento.app");
         uiAutomator2Options.setCapability("appActivity","com.cogmento.app.MainActivity");
         uiAutomator2Options.setApp(System.getProperty("user.dir")+"/src/main/resources/Cogmento.apk");
-        //uiAutomator2Options.setApp("bs://9932230731e9f6598e43255ff204c7905e1143b4");
         try {
-           // driver = new AndroidDriver(new URL("https://sivakolli_aIpA4i:8MZSbx6Y8RsspGzMTRsr@hub.browserstack.com/wd/hub"), uiAutomator2Options);
             driver = new AndroidDriver(new URL(" http://127.0.0.1:4723"), uiAutomator2Options);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
