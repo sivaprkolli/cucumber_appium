@@ -25,16 +25,16 @@ public class ManageContactsSteps extends WebDriverFactory {
     public ContactsPage contactsPage;
     private Scenario scenario;
 
-    public ManageContactsSteps() {
+    @io.cucumber.java.Before(order = 1)
+    public void beforeScenario(Scenario scenario) {
+        this.scenario = scenario;
+        if (driver == null) {
+            return;
+        }
         loginPage = new LoginPage(driver);
         homePage = new HomePage(driver);
         addContactPage = new AddContactPage(driver);
         contactsPage = new ContactsPage(driver);
-    }
-
-    @io.cucumber.java.Before
-    public void beforeScenario(Scenario scenario) {
-        this.scenario = scenario;
     }
 
     public void attachScreenshot(Scenario scenario) {

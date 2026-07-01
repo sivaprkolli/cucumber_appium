@@ -8,15 +8,31 @@ import org.qz.automation.WebDriverFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import static org.qz.automation.WebDriverFactory.driver;
 
 public class Hooks {
 
-    @BeforeAll
-    public static void initializeDrivers() throws MalformedURLException, InterruptedException {
-        WebDriverFactory.initializeDriver();
+    @Before(order = 0)
+    public void initializeDrivers(Scenario scenario) {
+        if (scenario.getSourceTagNames().contains("@iOS")) {
+            System.setProperty("mobile.platform", "ios");
+            WebDriverFactory.initializeDriver("ios");
+            return;
+        }
+
+        System.setProperty("mobile.platform", "android");
+        if (scenario.getSourceTagNames().contains("@SauceLabsCart")) {
+            System.setProperty("android.app.type", "saucelabs");
+        } else {
+            System.setProperty("android.app.type", "cogmento");
+        }
+        WebDriverFactory.initializeDriver("android");
+    }
+
+    @After
+    public void tearDown() {
+        WebDriverFactory.quitSession();
     }
 
     public void getScreenShot() throws IOException {

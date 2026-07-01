@@ -1,12 +1,11 @@
 package org.qz.automation;
 
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.ios.options.XCUITestOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.BeforeTest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,20 +13,51 @@ import java.time.Duration;
 import java.util.HashMap;
 
 public class WebDriverFactory {
-    public static AndroidDriver driver;
+    public static AppiumDriver driver;
 
     public static void initializeDriver()  {
-        UiAutomator2Options uiAutomator2Options = new UiAutomator2Options();
-        uiAutomator2Options.setPlatformVersion("14.0");
-        uiAutomator2Options.setPlatformName("Android");
-        uiAutomator2Options.setDeviceName("Samsung Galaxy S24");
-        uiAutomator2Options.setAutomationName("UiAutomator2");
-        uiAutomator2Options.setCapability("noReset", false);
-        uiAutomator2Options.setCapability("appPackage","com.cogmento.app");
-        uiAutomator2Options.setCapability("appActivity","com.cogmento.app.MainActivity");
-        uiAutomator2Options.setApp(System.getProperty("user.dir")+"/src/main/resources/Cogmento.apk");
+        initializeDriver(System.getProperty("mobile.platform", "android"));
+    }
+
+    public static synchronized void initializeDriver(String platform) {
+        quitSession();
         try {
-            driver = new AndroidDriver(new URL(" http://127.0.0.1:4723"), uiAutomator2Options);
+            String normalizedPlatform = platform == null ? "android" : platform.trim().toLowerCase();
+
+            if ("ios".equals(normalizedPlatform)) {
+                XCUITestOptions xcuiTestOptions = new XCUITestOptions();
+                xcuiTestOptions.setPlatformName("iOS");
+                xcuiTestOptions.setPlatformVersion(System.getProperty("ios.platformVersion", "26.0"));
+                xcuiTestOptions.setDeviceName(System.getProperty("ios.deviceName", "iPhone 17 Pro"));
+                xcuiTestOptions.setAutomationName("XCUITest");
+                xcuiTestOptions.setNewCommandTimeout(Duration.ofSeconds(90000));
+                xcuiTestOptions.setCapability("noReset", false);
+                xcuiTestOptions.setApp(System.getProperty("user.dir") + "/src/main/resources/iOSSauceLabs.app");
+                driver = new IOSDriver(new URL(System.getProperty("appium.server.url", "http://127.0.0.1:4723")), xcuiTestOptions);
+                return;
+            }
+
+            UiAutomator2Options uiAutomator2Options = new UiAutomator2Options();
+            uiAutomator2Options.setPlatformVersion(System.getProperty("android.platformVersion", "16.0"));
+            uiAutomator2Options.setPlatformName("Android");
+            uiAutomator2Options.setDeviceName(System.getProperty("android.deviceName", "Samsung Galaxy S24"));
+            uiAutomator2Options.setAutomationName("UiAutomator2");
+            uiAutomator2Options.setNewCommandTimeout(Duration.ofSeconds(90000));
+            uiAutomator2Options.setCapability("noReset", false);
+
+            // Keep Cogmento as default for existing tests unless explicitly overridden.
+            String androidAppType = System.getProperty("android.app.type", "cogmento").trim().toLowerCase();
+            if ("saucelabs".equals(androidAppType)) {
+                uiAutomator2Options.setCapability("appPackage", "com.swaglabsmobileapp");
+                uiAutomator2Options.setCapability("appActivity", "com.swaglabsmobileapp.MainActivity");
+                uiAutomator2Options.setApp(System.getProperty("user.dir") + "/src/main/resources/AndroidSauceLabs.apk");
+            } else {
+                uiAutomator2Options.setCapability("appPackage", "com.cogmento.app");
+                uiAutomator2Options.setCapability("appActivity", "com.cogmento.app.MainActivity");
+                uiAutomator2Options.setApp(System.getProperty("user.dir") + "/src/main/resources/Cogmento.apk");
+            }
+
+            driver = new AndroidDriver(new URL(System.getProperty("appium.server.url", "http://127.0.0.1:4723")), uiAutomator2Options);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -59,7 +89,10 @@ public class WebDriverFactory {
     }
 
     public static void quitSession(){
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+            driver = null;
+        }
     }
 
 }

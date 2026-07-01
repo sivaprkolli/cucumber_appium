@@ -1,7 +1,7 @@
 package org.qz.pages;
 
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.WebElement;
@@ -11,10 +11,8 @@ import org.qz.utils.AppiumActions;
 import java.time.Duration;
 
 public class HomePage {
-    private final AndroidDriver driver;
     private AppiumActions appiumActions;
-    public HomePage(AndroidDriver driver){
-        this.driver = driver;
+    public HomePage(AppiumDriver driver){
         appiumActions= new AppiumActions(driver);
         PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(10)), this);
     }
@@ -30,7 +28,7 @@ public class HomePage {
     }
     public void selectMenuItem(String menu){
         String menuItem = "new UiSelector().text(\"%s\")";
-        appiumActions.tapOnMobileElement((AppiumBy) AppiumBy.androidUIAutomator(String.format(menuItem, menu)));
+        appiumActions.tapOnMobileElement(AppiumBy.androidUIAutomator(String.format(menuItem, menu)));
         //driver.findElement(AppiumBy.androidUIAutomator(String.format(menuItem, menu))).click();
     }
 

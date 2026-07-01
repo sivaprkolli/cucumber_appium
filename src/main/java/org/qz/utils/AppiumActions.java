@@ -1,7 +1,7 @@
 package org.qz.utils;
 
-import io.appium.java_client.AppiumBy;
-import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.AppiumDriver;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Pause;
@@ -14,9 +14,9 @@ import java.time.Duration;
 import java.util.Collections;
 
 public class AppiumActions {
-    AndroidDriver driver;
+    AppiumDriver driver;
     WebDriverWait wait;
-    public AppiumActions(AndroidDriver driver){
+    public AppiumActions(AppiumDriver driver){
         this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     }
@@ -25,14 +25,14 @@ public class AppiumActions {
         wait.until(ExpectedConditions.elementToBeClickable(element)).click();
     }
 
-    public void tapOnMobileElement(AppiumBy by){
+    public void tapOnMobileElement(By by){
         wait.until(ExpectedConditions.elementToBeClickable(by)).click();
     }
     public void typeValue(WebElement element, String data){
         wait.until(ExpectedConditions.elementToBeClickable(element)).sendKeys(data);
     }
 
-    public boolean isElementDisplayed(AppiumBy by){
+    public boolean isElementDisplayed(By by){
         return wait.until(ExpectedConditions.presenceOfElementLocated(by)).isDisplayed();
     }
 

@@ -1,10 +1,9 @@
 package org.qz.pages;
 
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import io.cucumber.java.en.And;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.qz.utils.AppiumActions;
@@ -13,9 +12,7 @@ import java.time.Duration;
 
 public class ContactsPage {
     private AppiumActions appiumActions;
-    private AndroidDriver driver;
-    public ContactsPage(AndroidDriver driver){
-        this.driver = driver;
+    public ContactsPage(AppiumDriver driver){
         appiumActions= new AppiumActions(driver);
         PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(10)), this);
     }
@@ -67,16 +64,16 @@ public class ContactsPage {
 
     public void openContact(String firstName, String lastName){
         String names = "new UiSelector().text(\""+firstName+" "+lastName+"\").instance(0)";
-        appiumActions.tapOnMobileElement((AppiumBy) AppiumBy.androidUIAutomator(names));
+        appiumActions.tapOnMobileElement(AppiumBy.androidUIAutomator(names));
     }
 
     public boolean isContactCreated(String firstName, String lastName){
         String names = "new UiSelector().text(\""+firstName+" "+lastName+"\").instance(0)";
-        return appiumActions.isElementDisplayed((AppiumBy) AppiumBy.androidUIAutomator(names));
+        return appiumActions.isElementDisplayed(AppiumBy.androidUIAutomator(names));
     }
 
     public boolean isContactUpdated(String email){
         String name = "new UiSelector().textContains(\""+email+"\")";
-        return appiumActions.isElementDisplayed((AppiumBy) AppiumBy.androidUIAutomator(name));
+        return appiumActions.isElementDisplayed(AppiumBy.androidUIAutomator(name));
     }
 }

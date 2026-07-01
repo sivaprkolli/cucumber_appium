@@ -1,7 +1,6 @@
 package org.qz.pages;
 
-import io.appium.java_client.AppiumBy;
-import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.WebElement;
@@ -11,10 +10,8 @@ import org.qz.utils.AppiumActions;
 import java.time.Duration;
 
 public class AddContactPage {
-    private AndroidDriver driver;
     private AppiumActions appiumActions;
-    public AddContactPage(AndroidDriver driver){
-        this.driver = driver;
+    public AddContactPage(AppiumDriver driver){
         appiumActions = new AppiumActions(driver);
         PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(10)), this);
     }
