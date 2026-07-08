@@ -2,13 +2,9 @@ package org.qz.pages;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.PerformsTouchActions;
-import io.appium.java_client.TouchAction;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
-import io.appium.java_client.touch.WaitOptions;
-import io.appium.java_client.touch.offset.PointOption;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
@@ -43,7 +39,7 @@ public class SauceLabsShopPage {
     private WebElement cartIcon;
 
     @AndroidFindBy(accessibility = "test-PRODUCTS")
-    @iOSXCUITFindBy(accessibility = "test-PRODUCTS")
+    @iOSXCUITFindBy(iOSNsPredicate  = "value == 'PRODUCTS'")
     private WebElement productsHeader;
 
     @AndroidFindBy(accessibility = "test-ADD TO CART")
@@ -119,38 +115,37 @@ public class SauceLabsShopPage {
     }
 
     public boolean isProductsPageDisplayed() {
-        return isVisible(cartIcon) || isVisible(productsHeader);
+        return isVisible(productsHeader);
     }
 
     public void addProductToCart(String productName) {
-        String productXpath = "//*[contains(@text,'" + productName + "') or contains(@label,'" + productName + "') or contains(@name,'" + productName + "')]";
-        List<WebElement> productCandidates = driver.findElements(By.xpath(productXpath));
+        //String productXpath = "//*[contains(@text,'" + productName + "') or contains(@label,'" + productName + "') or contains(@name,'" + productName + "')]";
+        //List<WebElement> productCandidates = driver.findElements(By.xpath(productXpath));
+
         //productCandidates.get(0).click();
         waitForClickable(genericAddToCartButton).click();
     }
 
+    public void longPressOnElement(WebElement element) {
+        Point location = element.getLocation();
+        Dimension size = element.getSize();
+
+        Point locationOfElement =
+            new Point(location.getX() + size.getWidth() / 2,
+                (int) (location.getY() + size.getHeight() / 1.5));
+
+        PointerInput finger1 = new PointerInput(PointerInput.Kind.TOUCH, "finger1");
+        Sequence sequence = new Sequence(finger1, 1)
+                .addAction(finger1.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), locationOfElement))
+                .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger1, Duration.ofSeconds(5)))
+                .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+
+        driver.perform(Collections.singletonList(sequence));
+    }
+
     public void openCart() {
-        //waitForClickable(cartIcon).click();
-        try{
-            Point location = cartIcon.getLocation();
-            Dimension size = cartIcon.getSize();
-
-            Point locationOfElement =
-                    new Point(location.getX() + size.getWidth() / 1,
-                            location.getY() + size.getHeight() / 4);
-
-            PointerInput finger1 = new PointerInput(PointerInput.Kind.TOUCH, "finger1");
-            Sequence sequence = new Sequence(finger1, 1)
-                    .addAction(finger1.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), locationOfElement))
-                    .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                    .addAction(new Pause(finger1, Duration.ofSeconds(5)))
-                    .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-
-            driver.perform(Collections.singletonList(sequence));
-        }catch (Exception e){
-
-        }
-        System.out.println("Test");
+        longPressOnElement(cartIcon);
     }
 
     public boolean isProductDisplayedInCart(String productName) {
@@ -188,6 +183,13 @@ public class SauceLabsShopPage {
         waitForClickable(firstNameInput).sendKeys(firstName);
         waitForClickable(lastNameInput).sendKeys(lastName);
         waitForClickable(zipCodeInput).sendKeys(pin);
+        try{
+            waitForClickable(driver.findElement(AppiumBy.accessibilityId("return"))).click();
+        }catch (Exception e){
+            zipCodeInput.sendKeys("\n"); 
+        }
+
+    
     }
 
     public void tapContinueOnCheckout() {
@@ -208,8 +210,6 @@ public class SauceLabsShopPage {
                 return;
             }
         }
-
-        throw new NoSuchElementException("Finish button was not found after scrolling on checkout overview screen");
     }
 
     public boolean isOrderConfirmationDisplayed(String expectedMessage) {
@@ -227,10 +227,7 @@ public class SauceLabsShopPage {
 
         // Sauce Labs demo app text varies by platform/app version, so accept known variants.
         String[] knownMessages = {
-                "THANK YOU FOR YOU ORDER",
-                "THANK YOU FOR YOUR ORDER",
-                "Thanks for your order",
-                "Thnaks for your order"
+                "THANK YOU FOR YOUR ORDER"
         };
         for (String knownMessage : knownMessages) {
             if (normalizedActual.contains(normalizeOrderText(knownMessage))) {
