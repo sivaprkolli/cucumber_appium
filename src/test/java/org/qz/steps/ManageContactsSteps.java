@@ -12,6 +12,7 @@ import org.qz.pages.AddContactPage;
 import org.qz.pages.ContactsPage;
 import org.qz.pages.HomePage;
 import org.qz.pages.LoginPage;
+import org.qz.utils.SQLiteTestDataStore;
 import org.testng.Assert;
 
 import java.util.List;
@@ -19,11 +20,14 @@ import java.util.Map;
 
 public class ManageContactsSteps extends WebDriverFactory {
 
+    private static final String DEFAULT_CONTACT_KEY = System.getProperty("testdata.contact.key", "default_contact");
+
     public LoginPage loginPage;
     public HomePage homePage;
     public AddContactPage addContactPage;
     public ContactsPage contactsPage;
     private Scenario scenario;
+    private Map<String, String> defaultContact;
 
     @io.cucumber.java.Before(order = 1)
     public void beforeScenario(Scenario scenario) {
@@ -35,6 +39,7 @@ public class ManageContactsSteps extends WebDriverFactory {
         homePage = new HomePage(driver);
         addContactPage = new AddContactPage(driver);
         contactsPage = new ContactsPage(driver);
+        defaultContact = SQLiteTestDataStore.getContact(DEFAULT_CONTACT_KEY);
     }
 
     public void attachScreenshot(Scenario scenario) {
@@ -73,17 +78,17 @@ public class ManageContactsSteps extends WebDriverFactory {
     }
     @Then("the contact should be added successfully")
     public void the_contact_should_be_added_successfully() {
-        Assert.assertTrue(contactsPage.isContactCreated("Ravi", "Sindri"));
+        Assert.assertTrue(contactsPage.isContactCreated(defaultContact.get("firstName"), defaultContact.get("lastName")));
         attachScreenshot(scenario);
     }
 
     @Given("the contact {string} exists in the contact list")
     public void the_contact_exists_in_the_contact_list(String string) {
-        Assert.assertTrue(contactsPage.isContactCreated("Ravi", "Sindri"));
+        Assert.assertTrue(contactsPage.isContactCreated(defaultContact.get("firstName"), defaultContact.get("lastName")));
     }
     @When("the user selects {string} for {string}")
     public void the_user_selects_for(String string, String string2) {
-        contactsPage.openContact("Ravi", "Sindri");
+        contactsPage.openContact(defaultContact.get("firstName"), defaultContact.get("lastName"));
     }
     @When("updates the contact details")
     public void updates_the_contact_details(DataTable dataTable) {
@@ -97,7 +102,7 @@ public class ManageContactsSteps extends WebDriverFactory {
     }
     @Then("the contact details should be updated successfully")
     public void the_contact_details_should_be_updated_successfully() {
-        contactsPage.isContactUpdated("ravi@yopmail.com");
+        contactsPage.isContactUpdated(defaultContact.get("email"));
         attachScreenshot(scenario);
     }
 

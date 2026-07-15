@@ -8,24 +8,22 @@ Feature: Login
     Then User verify products page
 
   @LT2 @Smoke
-  Scenario: Verify login success with valid credentials using table
+  Scenario: Verify login success with valid credentials using SQLite key
     Given User open application
-   # When User enter valid credentials "standard_user" and "secret_sauce"
-    When User enter valid credentials using table
-      | standard_user | secret_sauce |
+    When User enter valid credentials using key "default_login"
     And User click on submit button
     Then User verify products page
 
 
   @LT3 @Smoke
-  Scenario Outline: Verify login success with valid credentials using examples
+  Scenario Outline: Verify login success with valid credentials using SQLite key examples
     Given User open application
-    When User enter valid credentials "<username>" and "<password>"
+    When User enter valid credentials using key "<credentialsKey>"
     And User click on submit button
     Then User verify products page
     Examples:
-      | username      | password     |
-      | standard_user | secret_sauce |
-      | visual_user | secret_sauce |
-      | performance_glitch_user | secret_sauce |
-      | problem_user | secret_sauce |
+      | credentialsKey |
+      | default_login  |
+      | default_login  |
+      | default_login  |
+      | default_login  |

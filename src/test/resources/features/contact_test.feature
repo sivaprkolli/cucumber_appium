@@ -10,13 +10,13 @@ Feature: Contact
     And the user taps the plus icon to add a new contact
     And the user enters the contact details
       | firstName | lastName | company   | identity   |
-      | Ravi      | Sindri   | QualiZeal | Brown Eyes |
+      | Siva      | Kolli    | Automation | Brown Eyes |
     Then the user verifies that the contact is created
     And the user opens the contact
     And the user edit the contact by adding email
       | email            |
-      | ravi@yopmail.com |
-    Then the user verifies that the contact is updated with email "ravi@yopmail.com"
+      | siva@yopmail.com |
+    Then the user verifies that the contact is updated with email "siva@yopmail.com"
     And the user opens the contact
     And the user deletes the contact
     Then the user verifies that the contact is deleted
